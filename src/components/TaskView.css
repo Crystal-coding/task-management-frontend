@@ -1,0 +1,7 @@
+.task-view-container {
+  width: 800px;
+  /* height: 6000px; */
+  /* background-color: pink; */
+  flex-direction: column;
+  margin: 30px auto;
+}
