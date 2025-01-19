@@ -10,7 +10,7 @@ const TaskView: React.FC = () => {
       <TaskToolbar></TaskToolbar>
       <TaskListView></TaskListView>
       <div>
-        <Button kind="secondary" style={{ margin: "0 auto" }}>Add a Task</Button>
+        <Button kind="secondary" style={{ margin: "" }}>Add a Task</Button>
       </div>
     </div >
   );
