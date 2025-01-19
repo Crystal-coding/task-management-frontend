@@ -38,6 +38,8 @@ const TaskListView: React.FC = () => {
 
   // set initial states
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState(10);
 
   // get tasks from api
   const fetchTasks = async () => {
@@ -49,7 +51,19 @@ const TaskListView: React.FC = () => {
     fetchTasks();
   }, []);
 
-  const rows = tasks.map((task) => ({
+  // pagination
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const currentData = tasks.slice(startIndex, endIndex);
+
+
+  const handlePaginationChange = ({ page, pageSize }: { page: number; pageSize: number }) => {
+    setCurrentPage(page);    // 更新当前页码
+    setPageSize(pageSize);   // 更新每页条目数
+  };
+
+
+  const rows = currentData.map((task) => ({
     id: task.id.toString(),
     title: task.title,
     priority: task.priority,
@@ -87,16 +101,13 @@ const TaskListView: React.FC = () => {
         backwardText="Previous page"
         forwardText="Next page"
         itemsPerPageText="Items per page:"
-        page={1}
+        page={currentPage}
         pageNumberText="Page Number"
-        pageSize={10}
-        pageSizes={[
-          10,
-          20,
-          30
-        ]}
+        pageSize={pageSize}
+        pageSizes={[10, 20, 30]}
         size="md"
-        totalItems={rows.length}
+        totalItems={tasks.length}
+        onChange={handlePaginationChange}
       />
     </div >
   );
