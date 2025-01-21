@@ -23,3 +23,16 @@ export const fetchTasks = async (): Promise<Task[]> => {
     return []
   }
 };
+
+
+// delete task
+export const deleteTask = async (taskId: number): Promise<boolean> => {
+  try {
+    // 发送 DELETE 请求，使用任务 ID 动态构造 URL
+    await axios.delete(`/task/${taskId}`);
+    return true; // 返回成功状态
+  } catch (error) {
+    console.error(`[deleteTask] Failed to delete task with ID ${taskId}: ${error}`);
+    return false; // 返回失败状态
+  }
+};

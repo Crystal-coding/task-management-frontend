@@ -8,10 +8,13 @@ import {
   TableHeader,
   TableBody,
   TableCell,
-  Pagination
+  Pagination,
+  Button
 } from '@carbon/react';
 import { fetchTasks as apiFetchTasks } from "../api/taskApi";
 import { Task } from "../types/task";
+import mockTasks from "../utils/mockTasks";
+import DeleteTask from "./DeleteTask";
 
 
 const headers = [
@@ -30,6 +33,10 @@ const headers = [
   {
     header: 'Due Date',
     key: 'dueDate'
+  },
+  {
+    header: 'Action',
+    key: 'action'
   }
 ];
 
@@ -41,9 +48,15 @@ const TaskListView: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // delete
+  const [currentTaskId, setCurrentTaskId] = useState<number | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+
   // get tasks from api
   const fetchTasks = async () => {
-    const data = await apiFetchTasks();
+    // const data = await apiFetchTasks();
+    const data = mockTasks;
     setTasks(data);
   }
 
@@ -62,13 +75,38 @@ const TaskListView: React.FC = () => {
     setPageSize(pageSize);   // 更新每页条目数
   };
 
+  const handleDelete = (taskId: number) => {
+    setCurrentTaskId(taskId);
+    setShowDeleteModal(true);
+    console.log('deleted item');
+
+  }
+
+  const handleDeleteResult = (taskId: number, success: boolean) => {
+    if (success) {
+      // 从任务列表中移除被删除的任务
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+    } else {
+      // 提示删除失败
+      alert('Failed to delete the task. Please try again.');
+    }
+    // 无论成功与否，关闭 DeleteTask 模态框
+    setShowDeleteModal(false);
+    setCurrentTaskId(null);
+  };
+
+
 
   const rows = currentData.map((task) => ({
     id: task.id.toString(),
     title: task.title,
     priority: task.priority,
     status: task.status,
-    dueDate: task.dueDate
+    dueDate: task.dueDate,
+    action: (
+      <Button kind="ghost" size="sm" onClick={() => handleDelete(task.id)}>
+        Delete
+      </Button>)
   }))
 
   return (
@@ -109,6 +147,14 @@ const TaskListView: React.FC = () => {
         totalItems={tasks.length}
         onChange={handlePaginationChange}
       />
+
+      {showDeleteModal && currentTaskId !== null && (
+        <DeleteTask
+          taskId={currentTaskId}
+          onDeleteResult={handleDeleteResult}
+        />
+      )}
+
     </div >
   );
 };
